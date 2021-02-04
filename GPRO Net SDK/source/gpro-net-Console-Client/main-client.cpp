@@ -37,6 +37,7 @@
 #include "RakNet/RakNetTypes.h"
 #include "RakNet/MessageIdentifiers.h"
 #include "RakNet/BitStream.h"
+#include "RakNet/GetTime.h"
 
 
 //definitions for max clients and server port as shown in the tutorial
@@ -45,8 +46,60 @@
 
 enum GameMessages
 {
-	ID_GAME_MESSAGE_1 = ID_USER_PACKET_ENUM+1
+	ID_GAME_MESSAGE_1 = ID_USER_PACKET_ENUM + 1
 };
+
+#pragma pack (push)
+
+struct GameMessage1
+{
+	//if timestamping then 1) time id, 2) you'll see :)
+	//char timeID; //ID_TIMESTAMP
+//	RakNet::Time time; // assigned using RakNet::GetTime();
+//	RakNet::Time time = RakNet::GetTime(); //like this
+	//id type: char
+	char msgID;
+	
+	//the message
+	char msg[512];
+	//the time stamp
+
+};
+
+#pragma pack (pop)
+
+struct GameState
+{
+	RakNet::RakPeerInterface* peer;
+
+};
+
+void handleInputLocal(GameState* state)
+{
+	//RakNet::RakPeerInterface
+	//local controllers, devices etc
+}
+
+void handleInputRemote(GameState* state)
+{
+	RakNet::RakPeerInterface* peer = state->peer;
+	//RakNet::Packet* packet;
+}
+
+void handleUpdate(GameState* state)
+{
+	//game loop update
+}
+
+void handleOutputLocal(GameState* state)
+{
+	//output
+}
+
+void handleOutputRemote(GameState* state)
+{
+	//local output
+}
 
 int main(int const argc, char const* const argv[])
 {
@@ -56,12 +109,27 @@ int main(int const argc, char const* const argv[])
 	bool isServer;
 	RakNet::Packet* packet;
 	RakNet::SocketDescriptor sd;
+	const char SERVER_IP[] = "172.16.2.51";
+	GameState gs[1] = {0};
+	//GameState gs;
+	//RakNet::SocketDescriptor gs;
+	//gs->peer->Startup(1, &sd, 1);
+	gs->peer = RakNet::RakPeerInterface::GetInstance();
+	gs->peer->SetMaximumIncomingConnections(0);
+	gs->peer->Connect(SERVER_IP, SERVER_PORT, 0, 0);
 
+	//game loop
+	while (1)
+	{
+		//input
+	}
+
+	//server loop
 	printf("(C) or (S)erver?\n");
 	std::cin.getline(str, 512); //tutorial uses "gets", which is deprecated and also unsafe
 	if ((str[0] == 'c') || str[0] == 'C')
 	{
-	//	RakNet::SocketDescriptor sd; //checked RakNet manual to see why tutorial code was throwing errors
+	//	RakNet::SocketDescriptor sd; //moved to outside this loop
 		peer->Startup(1, &sd, 1);
 		isServer = false;
 
@@ -91,7 +159,19 @@ int main(int const argc, char const* const argv[])
 		printf("Starting the client.\n");
 		peer->Connect(str, SERVER_PORT, 0, 0);
 	}
-
+	while (1)
+	{ 
+		//input
+		handleInputLocal(gs);
+		//recieve & merge
+		handleInputRemote(gs);
+		//update
+		handleUpdate(gs);
+		//package & send
+		handleOutputRemote(gs);
+		// output
+		handleOutputLocal(gs);
+	}
 	//the loop
 	while (1)
 	{
@@ -119,11 +199,19 @@ int main(int const argc, char const* const argv[])
 				printf("Our connection request has been accepted.\n");
 
 				//using BitStream to write a custom user message
-				//"Bitstreams are easier to use than sending casted structures, and handle engian swapping automatically"
-				RakNet::BitStream bsOut;
+				//from tutorial: "Bitstreams are easier to use than sending casted structures, and handle engian swapping automatically"
+			/*	RakNet::BitStream bsOut;
 				bsOut.Write((RakNet::MessageID)ID_GAME_MESSAGE_1);
 				bsOut.Write("Hello world");
 				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+				*/
+
+				GameMessage1 msg = {
+					(char)ID_GAME_MESSAGE_1,
+					"Hello World"
+				};
+				peer->Send((char*)&msg, sizeof(msg), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+
 
 				break;
 			}
@@ -180,6 +268,7 @@ int main(int const argc, char const* const argv[])
 
 			}
 		}
+
 	}
 
 	RakNet::RakPeerInterface::DestroyInstance(peer);
