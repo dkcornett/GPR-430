@@ -101,83 +101,67 @@ void handleOutputRemote(GameState* state)
 	//local output
 }
 
-int main(int const argc, char const* const argv[])
+int main(void)
 {
 	//sample code from RakNet (http://www.jenkinssoftware.com/raknet/manual/tutorial.html) input and debugged/ fixed for C++11 by Dianna
-	char str[512];
+	//char str[512];
 	RakNet::RakPeerInterface *peer = RakNet::RakPeerInterface::GetInstance();
-	bool isServer;
 	RakNet::Packet* packet;
 	RakNet::SocketDescriptor sd;
 	const char SERVER_IP[] = "172.16.2.51";
-	GameState gs[1] = {0};
+	//GameState gs[1] = {0};
 	//GameState gs;
 	//RakNet::SocketDescriptor gs;
 	//gs->peer->Startup(1, &sd, 1);
-	gs->peer = RakNet::RakPeerInterface::GetInstance();
-	gs->peer->SetMaximumIncomingConnections(0);
-	gs->peer->Connect(SERVER_IP, SERVER_PORT, 0, 0);
+	//gs->peer = RakNet::RakPeerInterface::GetInstance();
+	//gs->peer->SetMaximumIncomingConnections(0);
+	//gs->peer->Connect(SERVER_IP, SERVER_PORT, 0, 0);
 
 	//game loop
-	while (1)
-	{
-		//input
-	}
+	//while (1)
+	//{
+	//	//input
+	//}
 
-	//server loop
-	printf("(C) or (S)erver?\n");
-	std::cin.getline(str, 512); //tutorial uses "gets", which is deprecated and also unsafe
-	if ((str[0] == 'c') || str[0] == 'C')
-	{
 	//	RakNet::SocketDescriptor sd; //moved to outside this loop
-		peer->Startup(1, &sd, 1);
-		isServer = false;
+	peer->Startup(1, &sd, 1);
 
-	}
-	else
-	{
-		RakNet::SocketDescriptor sd(SERVER_PORT, 0);
-		peer->Startup(MAX_CLIENTS, &sd, 1);
-		isServer = true;
-	}
-	
-	//processing inputs to determine whether to run as server or client
-	if (isServer)
-	{
-		printf("Starting the server.\n");
-		// tutorial says: this line lets the server acce[t incoming connections from the clients
-		peer->SetMaximumIncomingConnections(MAX_CLIENTS);
-	}
-	else 
-	{
-		printf("Enter server IP or hit enter for 127.0.0.1\n ");
-		std::cin.getline(str, 512);
-		if (str[0] == 0)
-		{
-			strcpy(str, "127.0.0.1");
-		}
-		printf("Starting the client.\n");
-		peer->Connect(str, SERVER_PORT, 0, 0);
-	}
-	while (1)
-	{ 
-		//input
-		handleInputLocal(gs);
-		//recieve & merge
-		handleInputRemote(gs);
-		//update
-		handleUpdate(gs);
-		//package & send
-		handleOutputRemote(gs);
-		// output
-		handleOutputLocal(gs);
-	}
+	peer->SetMaximumIncomingConnections(0);
+
+	peer->Connect(SERVER_IP, SERVER_PORT, 0, 0);
+	printf("Starting the client.\n");
+
+	//while (1)
+	//{ 
+	//	//input
+	//	handleInputLocal(gs);
+	//	//recieve & merge
+	//	handleInputRemote(gs);
+	//	//update
+	//	handleUpdate(gs);
+	//	//package & send
+	//	handleOutputRemote(gs);
+	//	// output
+	//	handleOutputLocal(gs);
+	//}
 	//the loop
 	while (1)
 	{
 		for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive())
 		{
-			switch (packet->data[0])
+
+			RakNet::MessageID msg = packet->data[0];
+			if (msg == ID_TIMESTAMP) 
+			{
+
+				//hande time
+				// 1) bistream
+				// 2) skip msg byte
+				// 3) read time
+				// 4) read new msg byte: what is the acutal ID to handle
+			}
+
+			switch (msg)
 			{
 			case ID_REMOTE_DISCONNECTION_NOTIFICATION:
 			{
@@ -202,6 +186,7 @@ int main(int const argc, char const* const argv[])
 				//from tutorial: "Bitstreams are easier to use than sending casted structures, and handle engian swapping automatically"
 			/*	RakNet::BitStream bsOut;
 				bsOut.Write((RakNet::MessageID)ID_GAME_MESSAGE_1);
+				bsOut.Write((RakNet::Time)RakNet::GetTime());
 				bsOut.Write("Hello world");
 				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 				*/
@@ -226,19 +211,14 @@ int main(int const argc, char const* const argv[])
 			}
 			case ID_DISCONNECTION_NOTIFICATION:
 			{
-				if (isServer)
-				{
-					printf("A client has disconnected.\n");
-				}
-				else
-				{
+				
 					printf("We have been disconnected.\n");
-				}
+
 				break;
 			}
 			case ID_CONNECTION_LOST:
 			{
-				if (isServer) 
+				if (SERVER_IP == "a") // this is here due to unknown bug 
 				{
 					printf("A client lost the connection.\n");
 				}
