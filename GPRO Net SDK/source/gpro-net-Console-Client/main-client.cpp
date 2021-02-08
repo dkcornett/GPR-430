@@ -195,7 +195,12 @@ int main(void)
 					(char)ID_GAME_MESSAGE_1,
 					"Hello World"
 				};
-				peer->Send((char*)&msg, sizeof(msg), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+				peer->Send((char*)&msg, sizeof(msg),				//application
+					HIGH_PRIORITY, RELIABLE_SEQUENCED, 0,			//transport
+					packet->systemAddress, false);					//internet: send to all but specified address	
+				//	packet->systemAddress, true);					//send to all but specified address
+				//	RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);		//send to all connections
+				//	RakNet::UNASSIGNED_SYSTEM_ADDRESS, false);		// send to nobody
 
 
 				break;
@@ -230,14 +235,37 @@ int main(void)
 			}
 			case ID_GAME_MESSAGE_1:
 			{
+				
 				RakNet::RakString rs;
 				RakNet::BitStream bsIn(packet->data, packet->length, false);
 				bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
 				bsIn.Read(rs);
 				printf("%s\n", rs.C_String());
+				
 
-				break;
+				/*		//code block from the day
+				
+				RakNet::Time sendTime = 0;
+				RakNet::BitStream bsIn(packet->data, packet->length, false);
+				RakNet::MessageID msg = 0;
+				bsIn.Read(msg);
+
+				if (msg == ID_TIMESTAMP)
+				{
+					//handle time
+					// 1)bitstream
+					//2) skip msg byte
+					//3) read time
+					bsIn.Read(sendTime);
+					bsIn.Read(msg);
+				}
+				*/
+				
+
+
 			}
+				break;
+			
 			default:
 			{
 				printf("Message with identifier %i has arrived.\n", packet->data[0]);
