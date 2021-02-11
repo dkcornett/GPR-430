@@ -21,6 +21,13 @@
 	main-server.c/.cpp
 	Main source for console server application.
 */
+//
+//File name: main-server.cpp
+//Purpose: server side of chat
+//Contributors: Nick Brennan-Martin and Dianna Cornett
+
+
+
 
 #include "gpro-net/gpro-net.h"
 
@@ -49,6 +56,7 @@ enum GameMessages
 	ID_GAME_MESSAGE_1 = ID_USER_PACKET_ENUM + 1
 };
 
+//structure to retail username and ip of users
 #pragma pack(push, 1)
 struct Lobby
 {
@@ -65,7 +73,11 @@ int main(void)
 {
 	//char str[512];
 
-	std::fstream log("test.txt");
+	//open text file to log messages
+	std::ofstream log;
+	log.open("test.txt");
+	bool is = false;
+	int count = 0;
 
 
 	const unsigned short SERVER_PORT = 7777;
@@ -92,16 +104,24 @@ int main(void)
 			switch (packet->data[0])
 			{
 			case ID_REMOTE_DISCONNECTION_NOTIFICATION:
+				log << count << " " << "Another client has disconnected.\n";
+				count++;
 				printf("Another client has disconnected.\n");
 				break;
 			case ID_REMOTE_CONNECTION_LOST:
+				log << count << " " << "Another client has disconnected.\n";
+				count++;
 				printf("Another client has lost the connection.\n");
 				break;
 			case ID_REMOTE_NEW_INCOMING_CONNECTION:
+				log << count << " " << "Another client has disconnected.\n";
+				count++;
 				printf("Another client has connected.\n");
 				break;
 			case ID_CONNECTION_REQUEST_ACCEPTED:
 			{
+				log << count << " " << "Another client has disconnected.\n";
+				count++;
 				printf("Our connection request has been accepted.\n");
 
 				// Use a BitStream to write a custom user message
@@ -113,23 +133,29 @@ int main(void)
 			}
 			break;
 			case ID_NEW_INCOMING_CONNECTION:
+				log << count << " " << "Another client has disconnected.\n";
+				count++;
 				printf("A connection is incoming.\n");
+
+				//when user comes in get ip and username
 				room.ip[peer->NumberOfConnections() - 1] = peer->GetLocalIP(peer->NumberOfConnections() - 1);
 				room.username[peer->NumberOfConnections() - 1] = peer->GetSystemAddressFromIndex(peer->NumberOfConnections() - 1).ToString();
 
-				log << time;
-				log << "a" << '/n';
 				break;
 			case ID_NO_FREE_INCOMING_CONNECTIONS:
+				log << count << " " << "Another client has disconnected.\n";
+				count++;
 				printf("The server is full.\n");
 				break;
 			case ID_DISCONNECTION_NOTIFICATION:
-
+				log << count << " " << "Another client has disconnected.\n";
+				count++;
 				printf("A client has disconnected.\n");
 
 				break;
 			case ID_CONNECTION_LOST:
-
+				log << count << " " << "Another client has disconnected.\n";
+				count++;
 				printf("A client lost the connection.\n");
 
 				break;
@@ -145,12 +171,15 @@ int main(void)
 			break;
 
 			default:
+				log << count << " " << "Another client has disconnected.\n";
+				count++;
 				printf("Message with identifier %i has arrived.\n", packet->data[0]);
 				break;
 			}
 		}
 	}
 
+	//close txt file
 	log.close();
 
 	RakNet::RakPeerInterface::DestroyInstance(peer);
@@ -158,6 +187,8 @@ int main(void)
 	return 0;
 }
 
+
+//receive packet
 unsigned char GetPacketIdentifier(RakNet::Packet* p)
 {
 	if ((unsigned char)p->data[0] == ID_TIMESTAMP)
@@ -166,6 +197,7 @@ unsigned char GetPacketIdentifier(RakNet::Packet* p)
 		return (unsigned char)p->data[0];
 }
 
+//receive structure
 //void DoMyPacketHandler(RakNet::Packet* packet)
 //{
 //	// Cast the data to the appropriate type of struct
@@ -175,12 +207,4 @@ unsigned char GetPacketIdentifier(RakNet::Packet* p)
 //		return;
 //
 //	// Perform the functionality for this type of packet, with your struct,  MyStruct *s
-//}
-
-//int main(int const argc, char const* const argv[])
-//{
-//
-//
-//	printf("\n\n");
-//	system("pause");
 //}

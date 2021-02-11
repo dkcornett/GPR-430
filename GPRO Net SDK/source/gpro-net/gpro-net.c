@@ -23,3 +23,8 @@
 */
 
 #include "gpro-net/gpro-net.h"
+
+
+//File name: gpro-net.c
+//Purpose: common interface
+//Contributors: Nick Brennan-Martin and Dianna Cornett
