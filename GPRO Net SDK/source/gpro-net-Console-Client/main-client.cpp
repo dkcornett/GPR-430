@@ -22,6 +22,9 @@
 	Main source for console client application.
 */
 
+/*
+* This project is Assignment 1 as solved by Dianna Cornett and Nicholas Brennan-Martin
+*/
 
 #include "gpro-net/gpro-net.h"
 
@@ -52,7 +55,7 @@ enum GameMessages
 #pragma pack (push)
 
 struct GameMessage1
-{
+{/*
 	//if timestamping then 1) time id, 2) you'll see :)
 	//char timeID; //ID_TIMESTAMP
 //	RakNet::Time time; // assigned using RakNet::GetTime();
@@ -64,9 +67,27 @@ struct GameMessage1
 	char msg[512];
 	//the time stamp
 
+	char timeStamp = RakNet::GetTime();
+	*/
+
+	//let's try that again while looking at the documentation
+	
+	char timeID; //ID_TIMESTAMP gets attached to this
+	//RakNet::Time timeStamp = RakNet::GetTime();
+	RakNet::Time timeStamp;
+	//id type:: char
+	char msgID;
+	char msg[512];
+
 };
 
 #pragma pack (pop)
+struct ClientUser
+{
+//	char userName;
+//	char userName[512];
+};
+
 
 struct GameState
 {
@@ -108,7 +129,7 @@ int main(void)
 	RakNet::RakPeerInterface *peer = RakNet::RakPeerInterface::GetInstance();
 	RakNet::Packet* packet;
 	RakNet::SocketDescriptor sd;
-	const char SERVER_IP[] = "172.16.2.59";
+	const char SERVER_IP[] = "172.16.2.57";
 	//GameState gs[1] = {0};
 	//GameState gs;
 	//RakNet::SocketDescriptor gs;
@@ -184,17 +205,18 @@ int main(void)
 
 				//using BitStream to write a custom user message
 				//from tutorial: "Bitstreams are easier to use than sending casted structures, and handle engian swapping automatically"
-			/*	RakNet::BitStream bsOut;
+				RakNet::BitStream bsOut;
 				bsOut.Write((RakNet::MessageID)ID_GAME_MESSAGE_1);
 				bsOut.Write((RakNet::Time)RakNet::GetTime());
 				bsOut.Write("Hello world");
 				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
-				*/
+				
 
 				GameMessage1 msg = 
 				{
 					(char)ID_GAME_MESSAGE_1,
-					"Hello World"
+					RakNet::GetTime()//,
+					//"Hello World"
 				};
 
 				peer->Send((char*)&msg, sizeof(msg), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);

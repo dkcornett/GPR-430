@@ -27,6 +27,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdlib.h>
 #include <string.h>
 
 
@@ -106,9 +107,7 @@ int main(void)
 
 				break;
 			case ID_CONNECTION_LOST:
-				
 					printf("A client lost the connection.\n");
-
 				break;
 
 			case ID_GAME_MESSAGE_1:
