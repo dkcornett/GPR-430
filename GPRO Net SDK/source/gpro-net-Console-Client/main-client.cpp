@@ -108,7 +108,7 @@ int main(void)
 	RakNet::RakPeerInterface *peer = RakNet::RakPeerInterface::GetInstance();
 	RakNet::Packet* packet;
 	RakNet::SocketDescriptor sd;
-	const char SERVER_IP[] = "172.16.2.51";
+	const char SERVER_IP[] = "172.16.2.59";
 	//GameState gs[1] = {0};
 	//GameState gs;
 	//RakNet::SocketDescriptor gs;
@@ -191,10 +191,12 @@ int main(void)
 				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 				*/
 
-				GameMessage1 msg = {
+				GameMessage1 msg = 
+				{
 					(char)ID_GAME_MESSAGE_1,
 					"Hello World"
 				};
+
 				peer->Send((char*)&msg, sizeof(msg), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 
 
