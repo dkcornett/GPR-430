@@ -13,10 +13,19 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\gpro-net-common">
+      <UniqueIdentifier>{6bad9330-e63f-4d5a-8689-e14c35b35d15}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\include\gpro-net\gpro-net.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\Downloads\gpro-net-gamestate.h">
+      <Filter>Header Files\gpro-net-common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\Downloads\gpro-net-console.h">
+      <Filter>Header Files\gpro-net-common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

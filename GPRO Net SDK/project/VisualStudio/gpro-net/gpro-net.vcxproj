@@ -175,6 +175,8 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\..\Downloads\gpro-net-console.h" />
+    <ClInclude Include="..\..\..\..\..\..\Downloads\gpro-net-gamestate.h" />
     <ClInclude Include="..\..\..\include\gpro-net\gpro-net.h" />
   </ItemGroup>
   <ItemGroup>
