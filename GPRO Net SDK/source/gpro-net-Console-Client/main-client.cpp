@@ -86,6 +86,7 @@ struct ClientUser
 {
 //	char userName;
 //	char userName[512];
+
 };
 
 
@@ -212,11 +213,10 @@ int main(void)
 				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 				
 
-				GameMessage1 msg = 
+				GameMessage1 msg =
 				{
 					(char)ID_GAME_MESSAGE_1,
-					RakNet::GetTime()//,
-					//"Hello World"
+					RakNet::GetTime(),
 				};
 
 				peer->Send((char*)&msg, sizeof(msg), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);

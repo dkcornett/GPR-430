@@ -34,8 +34,8 @@
 #include "RakNet/RakPeerInterface.h"
 
 
-#include <stdio.h>
-#include <string.h>
+//#include <stdio.h>
+//#include <string.h>
 #include "RakNet/RakPeerInterface.h"
 #include "RakNet/MessageIdentifiers.h"
 #include "RakNet/BitStream.h"
