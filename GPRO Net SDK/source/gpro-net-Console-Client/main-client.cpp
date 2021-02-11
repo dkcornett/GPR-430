@@ -24,6 +24,7 @@
 
 /*
 * This project is Assignment 1 as solved by Dianna Cornett and Nicholas Brennan-Martin
+* check our readme for more details
 */
 
 #include "gpro-net/gpro-net.h"
@@ -72,6 +73,7 @@ struct GameMessage1
 
 	//let's try that again while looking at the documentation
 	
+
 	char timeID; //ID_TIMESTAMP gets attached to this
 	//RakNet::Time timeStamp = RakNet::GetTime();
 	RakNet::Time timeStamp;
@@ -85,8 +87,8 @@ struct GameMessage1
 struct ClientUser
 {
 //	char userName;
-//	char userName[512];
-
+	char userName[512];
+	bool isActive;
 };
 
 
@@ -121,6 +123,34 @@ void handleOutputLocal(GameState* state)
 void handleOutputRemote(GameState* state)
 {
 	//local output
+}
+
+void GetUserList()
+{
+	//this function being handled by Dianna
+	//get struct username 
+	struct Lobby;
+	//for lobby list print usernames	//get the list
+
+}
+
+char EnterMessage()
+{
+	//this function being handled by Dianna
+	char str[512];
+	std::cin.getline(str, 512);
+
+	if (str == "userlist" || "user list")
+	{
+		GetUserList();
+		//str = to.String("you have requested a user list");
+		return *str;
+	}
+	else
+	{
+		return *str;
+	}
+
 }
 
 int main(void)
@@ -175,12 +205,18 @@ int main(void)
 			RakNet::MessageID msg = packet->data[0];
 			if (msg == ID_TIMESTAMP) 
 			{
-
+				/*RakNet::RakString rs;
+				RakNet::BitStream bsIn(packet->data, packet->length, false);
+				unsigned char useTimeStamp;
+				RakNet::Time timeStamp;
+				bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
+				//bsIn.RakNet::GetTime();
 				//hande time
 				// 1) bistream
 				// 2) skip msg byte
 				// 3) read time
 				// 4) read new msg byte: what is the acutal ID to handle
+				*/
 			}
 
 			switch (msg)
@@ -215,8 +251,9 @@ int main(void)
 
 				GameMessage1 msg =
 				{
+				//	(char)ID_TIMESTAMP,
 					(char)ID_GAME_MESSAGE_1,
-					RakNet::GetTime(),
+				//	RakNet::GetTime(),
 				};
 
 				peer->Send((char*)&msg, sizeof(msg), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
@@ -265,7 +302,9 @@ int main(void)
 			default:
 			{
 				printf("Message with identifier %i has arrived.\n", packet->data[0]);
+				EnterMessage();
 				break;
+
 			}
 			
 
