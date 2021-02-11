@@ -27,9 +27,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdlib.h>
 #include <string.h>
-
+#include <iostream>
+#include <fstream>
 
 #include "RakNet/RakPeerInterface.h"
 
@@ -49,9 +49,24 @@ enum GameMessages
 	ID_GAME_MESSAGE_1 = ID_USER_PACKET_ENUM + 1
 };
 
+#pragma pack(push, 1)
+struct Lobby
+{
+
+	unsigned char ID_;
+
+	std::string username[10];
+	std::string ip[10];
+
+};
+#pragma pack(pop)
+
 int main(void)
 {
 	//char str[512];
+
+	std::fstream log("test.txt");
+
 
 	const unsigned short SERVER_PORT = 7777;
 	const unsigned short MAX_CLIENTS = 10;
@@ -59,7 +74,7 @@ int main(void)
 	RakNet::RakPeerInterface* peer = RakNet::RakPeerInterface::GetInstance();
 	RakNet::Packet* packet;
 
-	
+
 	RakNet::SocketDescriptor sd(SERVER_PORT, 0);
 	peer->Startup(MAX_CLIENTS, &sd, 1);
 
@@ -67,6 +82,8 @@ int main(void)
 	printf("Starting the server.\n");
 	// We need to let the server accept incoming connections from the clients
 	peer->SetMaximumIncomingConnections(MAX_CLIENTS);
+
+	Lobby room;
 
 	while (1)
 	{
@@ -97,17 +114,24 @@ int main(void)
 			break;
 			case ID_NEW_INCOMING_CONNECTION:
 				printf("A connection is incoming.\n");
+				room.ip[peer->NumberOfConnections() - 1] = peer->GetLocalIP(peer->NumberOfConnections() - 1);
+				room.username[peer->NumberOfConnections() - 1] = peer->GetSystemAddressFromIndex(peer->NumberOfConnections() - 1).ToString();
+
+				log << time;
+				log << "a" << '/n';
 				break;
 			case ID_NO_FREE_INCOMING_CONNECTIONS:
 				printf("The server is full.\n");
 				break;
 			case ID_DISCONNECTION_NOTIFICATION:
-				
-					printf("A client has disconnected.\n");
+
+				printf("A client has disconnected.\n");
 
 				break;
 			case ID_CONNECTION_LOST:
-					printf("A client lost the connection.\n");
+
+				printf("A client lost the connection.\n");
+
 				break;
 
 			case ID_GAME_MESSAGE_1:
@@ -127,11 +151,31 @@ int main(void)
 		}
 	}
 
+	log.close();
 
 	RakNet::RakPeerInterface::DestroyInstance(peer);
 
 	return 0;
 }
+
+unsigned char GetPacketIdentifier(RakNet::Packet* p)
+{
+	if ((unsigned char)p->data[0] == ID_TIMESTAMP)
+		return (unsigned char)p->data[sizeof(unsigned char) + sizeof(unsigned long)];
+	else
+		return (unsigned char)p->data[0];
+}
+
+//void DoMyPacketHandler(RakNet::Packet* packet)
+//{
+//	// Cast the data to the appropriate type of struct
+//	MyStruct* s = (MyStruct*)packet->data;
+//	assert(p->length == sizeof(MyStruct)); // This is a good idea if you’re transmitting structs.
+//	if (p->length != sizeof(MyStruct))
+//		return;
+//
+//	// Perform the functionality for this type of packet, with your struct,  MyStruct *s
+//}
 
 //int main(int const argc, char const* const argv[])
 //{
