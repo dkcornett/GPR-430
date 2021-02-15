@@ -50,6 +50,135 @@
 #define MAX_CLIENTS 10
 #define SERVER_PORT 7777
 
+
+//things that are common to all message tyoes
+//	-> timestamp ID (constant)
+//	-> timestamp
+//	-> actual message identifier
+//	-> ability to read and write
+//	-> ability to determine packet settings
+//things that are different
+//	-> actual message data
+//		-> any type of raw bytes
+//		-> no raw or encapsulated pointers
+// other unknowns
+//	-> what if we have a pointer or pool???
+
+//	common interface
+//	-> want to be able to read/write from/to bitstream easily
+//	-> way of mapping our data to the bitstream 
+
+//our message data/identifiers
+enum gproMessageID
+{
+	ID_CHATMESSAGE = ID_USER_PACKET_ENUM + 1,
+};
+
+class cMessage
+{
+//	const RakNet::Time time;
+	const RakNet::MessageID id;
+
+protected:
+	cMessage(/*RakNet::Time time_new, */
+		RakNet::MessageID id_new) :	/*time(time_new),*/ 
+		id(id_new) {}
+public: 
+//	RakNet::Time GetTime() const { return time; };
+	RakNet::MessageID GetID() const { return id; };
+
+	//	decypher?
+
+
+	virtual RakNet::BitStream& Read(RakNet::BitStream& bsp) 
+	{
+		//bsp->Read(time);
+		return bsp;
+	}
+	virtual RakNet::BitStream& Write(RakNet::BitStream& bsp) const 
+	{
+		//bsp->Write(time);
+		//return bsp;
+	}
+
+
+};
+
+RakNet::BitStream& operator>>(RakNet::BitStream& bsp, cMessage& msg)
+{
+	return msg.Read(bsp);
+}
+RakNet::BitStream& operator<<(RakNet::BitStream& bsp, cMessage const& msg)
+{
+	return msg.Write(bsp);
+}
+
+
+//	message header
+class cMessageHeader
+{
+	// no data: timestamp ID
+	RakNet::Time time;
+
+	//	sequence
+	int count;
+	//RakNet::MessageID* id_list;
+	RakNet::MessageID id_list[16];
+};
+
+//time message
+class cTimeMessage : public cMessage
+{
+	RakNet::Time time;
+public:
+	cTimeMessage() : cMessage(ID_TIMESTAMP), time(RakNet::GetTime()) {}
+	RakNet::Time GetTime() const { return time; };
+	bool Read(RakNet::BitStream* bsp)
+	{
+	//	RakNet::MessageID fakeID;
+	//	bsp->Read(fakeID);
+		bsp->Read(time);
+		return true;
+	}
+	bool Write(RakNet::BitStream* bsp) const
+	{
+	//	bsp->Write(GetID());
+		bsp->Write(time);
+		return true;
+	}
+};
+
+class cChatMessage : public cMessage
+{
+	//	sender, receiver content
+	//RakNet::RakString rstr;
+	//std::string str;
+	char* cstr;
+	int len;
+	
+public:
+	//cChatMessage(std::string str_new) : cMessage(ID_CHATMESSAGE), str(str_new) {}
+	cChatMessage(char* cstr_new) : cMessage(ID_CHATMESSAGE), cstr(cstr_new), len(strlen(cstr_new)) {}
+	//
+	bool Read(RakNet::BitStream* bsp)
+	{
+		//bsp->Read(str);	//encapsulated pointer :(
+		bsp->Read(len);
+		//allocation?
+		bsp->Read(cstr, len);
+		return true;
+
+	}
+	bool Write(RakNet::BitStream* bsp) const
+	{
+		//	can write ID but can't read it back: need to fix
+		bsp->Write(len);
+		bsp->Write(cstr, len);	//bsp->Write((char const*)cstr);	//also works
+		return true;
+	}
+};
+
+
 enum GameMessages
 {
 	ID_GAME_MESSAGE_1 = ID_USER_PACKET_ENUM + 1
@@ -156,7 +285,7 @@ char EnterMessage(unsigned char* data)
 }
 
 int main(void)
-{
+{ 
 	//sample code from RakNet (http://www.jenkinssoftware.com/raknet/manual/tutorial.html) input and debugged/ fixed for C++11 by Dianna
 	//char str[512];
 	RakNet::RakPeerInterface *peer = RakNet::RakPeerInterface::GetInstance();
@@ -319,4 +448,5 @@ int main(void)
 	RakNet::RakPeerInterface::DestroyInstance(peer);
 	printf("\n\n");
 	system("pause");
+	*/
 }
