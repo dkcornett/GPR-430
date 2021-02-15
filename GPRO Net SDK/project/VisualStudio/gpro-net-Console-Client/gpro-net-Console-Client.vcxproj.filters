@@ -21,5 +21,8 @@
     <ClCompile Include="..\..\..\source\gpro-net-Console-Client\main-client.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\gpro-net\gpro-net-common\gpro-net-console_win.c">
+      <Filter>Source Files\gpro-net-common</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

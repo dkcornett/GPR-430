@@ -16,21 +16,27 @@
     <Filter Include="Header Files\gpro-net-common">
       <UniqueIdentifier>{6bad9330-e63f-4d5a-8689-e14c35b35d15}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\gpro-net-common">
+      <UniqueIdentifier>{9f82fa06-b7cd-465d-9da2-b24229966679}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\include\gpro-net\gpro-net.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\Downloads\gpro-net-gamestate.h">
+    <ClInclude Include="..\..\..\include\gpro-net\gpro-net-common\gpro-net-console.h">
       <Filter>Header Files\gpro-net-common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\Downloads\gpro-net-console.h">
+    <ClInclude Include="..\..\..\include\gpro-net\gpro-net-common\gpro-net-gamestate.h">
       <Filter>Header Files\gpro-net-common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\source\gpro-net\gpro-net.c">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\gpro-net\gpro-net-common\gpro-net-console_win.c">
+      <Filter>Source Files\gpro-net-common</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

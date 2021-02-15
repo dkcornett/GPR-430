@@ -23,9 +23,11 @@
 */
 
 /*
-* This project is Assignment 1 as solved by Dianna Cornett and Nicholas Brennan-Martin
+* This project is Assignment 2 as solved by Dianna Cornett and Nicholas Brennan-Martin
 * check our readme for more details
 */
+
+//reminder: USING UDP, FAKING TCP
 
 #include "gpro-net/gpro-net.h"
 
@@ -134,7 +136,7 @@ void GetUserList()
 
 }
 
-char EnterMessage()
+char EnterMessage(unsigned char* data)
 {
 	//this function being handled by Dianna
 	char str[512];
@@ -302,7 +304,7 @@ int main(void)
 			default:
 			{
 				printf("Message with identifier %i has arrived.\n", packet->data[0]);
-				EnterMessage();
+				EnterMessage(packet->data);
 				break;
 
 			}
