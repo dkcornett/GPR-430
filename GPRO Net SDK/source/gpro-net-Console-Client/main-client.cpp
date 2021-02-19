@@ -30,7 +30,8 @@
 //reminder: USING UDP, FAKING TCP
 
 #include "gpro-net/gpro-net.h"
-
+#include "gpro-net//gpro-net-common/gpro-net-console.h"
+#include "gpro-net//gpro-net-common/gpro-net-gamestate.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -148,35 +149,35 @@ public:
 	}
 };
 
-class cChatMessage : public cMessage
-{
-	//	sender, receiver content
-	//RakNet::RakString rstr;
-	//std::string str;
-	char* cstr;
-	int len;
-	
-public:
-	//cChatMessage(std::string str_new) : cMessage(ID_CHATMESSAGE), str(str_new) {}
-	cChatMessage(char* cstr_new) : cMessage(ID_CHATMESSAGE), cstr(cstr_new), len(strlen(cstr_new)) {}
-	//
-	bool Read(RakNet::BitStream* bsp)
-	{
-		//bsp->Read(str);	//encapsulated pointer :(
-		bsp->Read(len);
-		//allocation?
-		bsp->Read(cstr, len);
-		return true;
-
-	}
-	bool Write(RakNet::BitStream* bsp) const
-	{
-		//	can write ID but can't read it back: need to fix
-		bsp->Write(len);
-		bsp->Write(cstr, len);	//bsp->Write((char const*)cstr);	//also works
-		return true;
-	}
-};
+//class cChatMessage : public cMessage
+//{
+//	//	sender, receiver content
+//	//RakNet::RakString rstr;
+//	//std::string str;
+//	char* cstr;
+//	int len;
+//	
+//public:
+//	//cChatMessage(std::string str_new) : cMessage(ID_CHATMESSAGE), str(str_new) {}
+//	cChatMessage(char* cstr_new) : cMessage(ID_CHATMESSAGE), cstr(cstr_new), len(strlen(cstr_new)) {}
+//	//
+//	bool Read(RakNet::BitStream* bsp)
+//	{
+//		//bsp->Read(str);	//encapsulated pointer :(
+//		bsp->Read(len);
+//		//allocation?
+//		bsp->Read(cstr, len);
+//		return true;
+//
+//	}
+//	bool Write(RakNet::BitStream* bsp) const
+//	{
+//		//	can write ID but can't read it back: need to fix
+//		bsp->Write(len);
+//		bsp->Write(cstr, len);	//bsp->Write((char const*)cstr);	//also works
+//		return true;
+//	}
+//};
 
 
 enum GameMessages
@@ -291,7 +292,7 @@ int main(void)
 	RakNet::RakPeerInterface *peer = RakNet::RakPeerInterface::GetInstance();
 	RakNet::Packet* packet;
 	RakNet::SocketDescriptor sd;
-	const char SERVER_IP[] = "172.16.2.57";
+	const char SERVER_IP[] = "172.16.2.63";
 	//GameState gs[1] = {0};
 	//GameState gs;
 	//RakNet::SocketDescriptor gs;
@@ -334,21 +335,21 @@ int main(void)
 		{
 
 			RakNet::MessageID msg = packet->data[0];
-			if (msg == ID_TIMESTAMP) 
-			{
-				/*RakNet::RakString rs;
-				RakNet::BitStream bsIn(packet->data, packet->length, false);
-				unsigned char useTimeStamp;
-				RakNet::Time timeStamp;
-				bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
-				//bsIn.RakNet::GetTime();
-				//hande time
-				// 1) bistream
-				// 2) skip msg byte
-				// 3) read time
-				// 4) read new msg byte: what is the acutal ID to handle
-				*/
-			}
+			//if (msg == ID_TIMESTAMP) 
+			//{
+			//	RakNet::RakString rs;
+			//	RakNet::BitStream bsIn(packet->data, packet->length, false);
+			//	unsigned char useTimeStamp;
+			//	RakNet::Time timeStamp;
+			//	bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
+			//	//bsIn.RakNet::GetTime();
+			//	//hande time
+			//	// 1) bistream
+			//	// 2) skip msg byte
+			//	// 3) read time
+			//	// 4) read new msg byte: what is the acutal ID to handle
+			//	
+			//}
 
 			switch (msg)
 			{
@@ -375,19 +376,19 @@ int main(void)
 				//from tutorial: "Bitstreams are easier to use than sending casted structures, and handle engian swapping automatically"
 				RakNet::BitStream bsOut;
 				bsOut.Write((RakNet::MessageID)ID_GAME_MESSAGE_1);
-				bsOut.Write((RakNet::Time)RakNet::GetTime());
+				//bsOut.Write((RakNet::Time)RakNet::GetTime());
 				bsOut.Write("Hello world");
 				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 				
 
-				GameMessage1 msg =
-				{
-				//	(char)ID_TIMESTAMP,
-					(char)ID_GAME_MESSAGE_1,
-				//	RakNet::GetTime(),
-				};
+				//GameMessage1 msg =
+				//{
+				////	(char)ID_TIMESTAMP,
+				//	(char)ID_GAME_MESSAGE_1,
+				////	RakNet::GetTime(),
+				//};
 
-				peer->Send((char*)&msg, sizeof(msg), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+				//peer->Send((char*)&msg, sizeof(msg), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 
 
 				break;
@@ -448,5 +449,14 @@ int main(void)
 	RakNet::RakPeerInterface::DestroyInstance(peer);
 	printf("\n\n");
 	system("pause");
-	*/
+	
 }
+
+
+//int main(int const argc, char const* const argv[])
+//{
+//
+//	gpro_consoleDrawTestPatch();
+//	printf("\n\n");
+//	system("pause");
+//}
