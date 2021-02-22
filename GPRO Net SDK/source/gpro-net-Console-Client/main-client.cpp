@@ -37,6 +37,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <iostream>
+#include <string>
 
 
 
@@ -292,7 +293,7 @@ int main(void)
 	RakNet::RakPeerInterface *peer = RakNet::RakPeerInterface::GetInstance();
 	RakNet::Packet* packet;
 	RakNet::SocketDescriptor sd;
-	const char SERVER_IP[] = "172.16.2.63";
+	const char SERVER_IP[] = "172.16.2.60";
 	//GameState gs[1] = {0};
 	//GameState gs;
 	//RakNet::SocketDescriptor gs;
@@ -301,11 +302,7 @@ int main(void)
 	//gs->peer->SetMaximumIncomingConnections(0);
 	//gs->peer->Connect(SERVER_IP, SERVER_PORT, 0, 0);
 
-	//game loop
-	//while (1)
-	//{
-	//	//input
-	//}
+	
 
 	//	RakNet::SocketDescriptor sd; //moved to outside this loop
 	peer->Startup(1, &sd, 1);
@@ -435,15 +432,27 @@ int main(void)
 			{
 				printf("Message with identifier %i has arrived.\n", packet->data[0]);
 				EnterMessage(packet->data);
+
 				break;
 
 			}
-			
-
+		
 
 			}
-		}
 
+			//THIS CAN SEND INPUT ONCE. SOON WE WILL HAVE THE SECRET
+			char newInput[512];
+			if (std::cin.getline(newInput, 512))
+			{
+				RakNet::BitStream bsOut;
+				bsOut.Write((RakNet::MessageID)ID_GAME_MESSAGE_1);
+				bsOut.Write(newInput);
+				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+				
+			}
+
+		}
+		
 	}
 
 	RakNet::RakPeerInterface::DestroyInstance(peer);
