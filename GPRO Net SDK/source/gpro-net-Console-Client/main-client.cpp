@@ -182,7 +182,8 @@ public:
 
 enum GameMessages
 {
-	ID_GAME_MESSAGE_1 = ID_USER_PACKET_ENUM + 1
+	ID_GAME_MESSAGE_1 = ID_USER_PACKET_ENUM + 1,
+	ID_GAME_MESSAGE_2
 };
 
 #pragma pack (push)
@@ -292,7 +293,7 @@ int main(void)
 	RakNet::RakPeerInterface *peer = RakNet::RakPeerInterface::GetInstance();
 	RakNet::Packet* packet;
 	RakNet::SocketDescriptor sd;
-	const char SERVER_IP[] = "172.16.2.63";
+	const char SERVER_IP[] = "172.16.2.197";
 	//GameState gs[1] = {0};
 	//GameState gs;
 	//RakNet::SocketDescriptor gs;
@@ -431,6 +432,13 @@ int main(void)
 
 				break;
 			}
+
+			case ID_GAME_MESSAGE_2: 
+			{
+
+
+			}
+
 			default:
 			{
 				printf("Message with identifier %i has arrived.\n", packet->data[0]);

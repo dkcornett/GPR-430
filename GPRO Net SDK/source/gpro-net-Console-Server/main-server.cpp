@@ -49,7 +49,8 @@
 
 enum GameMessages
 {
-	ID_GAME_MESSAGE_1 = ID_USER_PACKET_ENUM + 1
+	ID_GAME_MESSAGE_1 = ID_USER_PACKET_ENUM + 1,
+	ID_GAME_MESSAGE_2
 };
 
 //structure to retail username and ip of users
@@ -70,11 +71,10 @@ int main(void)
 	//char str[512];
 
 	//open text file to log messages
-	std::ofstream log;
+	/*std::ofstream log;
 	log.open("test.txt");
 	bool is = false;
-	int count = 0;
-
+	int count = 0;*/
 
 	const unsigned short SERVER_PORT = 7777;
 	const unsigned short MAX_CLIENTS = 10;
@@ -100,37 +100,30 @@ int main(void)
 			switch (packet->data[0])
 			{
 			case ID_REMOTE_DISCONNECTION_NOTIFICATION:
-				log << count << " " << "Another client has disconnected.\n";
-				count++;
+				
 				printf("Another client has disconnected.\n");
 				break;
 			case ID_REMOTE_CONNECTION_LOST:
-				log << count << " " << "Another client has disconnected.\n";
-				count++;
+				
 				printf("Another client has lost the connection.\n");
 				break;
 			case ID_REMOTE_NEW_INCOMING_CONNECTION:
-				log << count << " " << "Another client has disconnected.\n";
-				count++;
+				
 				printf("Another client has connected.\n");
 				break;
 			case ID_CONNECTION_REQUEST_ACCEPTED:
 			{
-				log << count << " " << "Another client has disconnected.\n";
-				count++;
+				
 				printf("Our connection request has been accepted.\n");
 
 				// Use a BitStream to write a custom user message
 				// Bitstreams are easier to use than sending casted structures, and handle endian swapping automatically
-				RakNet::BitStream bsOut;
-				bsOut.Write((RakNet::MessageID)ID_GAME_MESSAGE_1);
-				bsOut.Write("Hello world");
-				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+				
+				//peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetSystemAddressFromIndex(0), false);
 			}
 			break;
 			case ID_NEW_INCOMING_CONNECTION:
-				log << count << " " << "Another client has disconnected.\n";
-				count++;
+				
 				printf("A connection is incoming.\n");
 
 				//when user comes in get ip and username
@@ -139,19 +132,16 @@ int main(void)
 
 				break;
 			case ID_NO_FREE_INCOMING_CONNECTIONS:
-				log << count << " " << "Another client has disconnected.\n";
-				count++;
+				
 				printf("The server is full.\n");
 				break;
 			case ID_DISCONNECTION_NOTIFICATION:
-				log << count << " " << "Another client has disconnected.\n";
-				count++;
+				
 				printf("A client has disconnected.\n");
 
 				break;
 			case ID_CONNECTION_LOST:
-				log << count << " " << "Another client has disconnected.\n";
-				count++;
+				
 				printf("A client lost the connection.\n");
 
 				break;
@@ -163,12 +153,22 @@ int main(void)
 				bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
 				bsIn.Read(rs);
 				printf("%s\n", rs.C_String());
+				RakNet::BitStream bsOut;
+				bsOut.Write((RakNet::MessageID)ID_GAME_MESSAGE_1);
+				bsOut.Write("Hello world");
+				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetSystemAddressFromIndex(0), false);
+
 			}
+			case ID_GAME_MESSAGE_2: 
+			{
+
+
+			}
+
 			break;
 
 			default:
-				log << count << " " << "Another client has disconnected.\n";
-				count++;
+				
 				printf("Message with identifier %i has arrived.\n", packet->data[0]);
 				break;
 			}
@@ -176,7 +176,7 @@ int main(void)
 	}
 
 	//close txt file
-	log.close();
+	//log.close();
 
 	RakNet::RakPeerInterface::DestroyInstance(peer);
 
