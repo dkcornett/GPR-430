@@ -450,6 +450,16 @@ int main(void)
 
 
 			}
+
+			char newInput[512];
+			if (std::cin.getline(newInput, 512))
+			{
+				RakNet::BitStream bsOut;
+				bsOut.Write((RakNet::MessageID)ID_GAME_MESSAGE_1);
+				bsOut.Write(newInput);
+				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+
+			}
 		}
 
 	}
