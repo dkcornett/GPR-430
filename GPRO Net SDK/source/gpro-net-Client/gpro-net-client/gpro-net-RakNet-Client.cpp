@@ -98,7 +98,37 @@ namespace gproNet
 			// client receives greeting, just print it
 			ReadTest(bitstream);
 		}	return true;
+/*			//go back and wathc 3/29 video
+		//agent
+		case ID_GPRO_MESSAGE_AGENT_UPDATE:
+		{
+			// wht the other peer tells us is the state
+			sSimulationAgent agent, tmp;
+			sSimulationAgent::Read(bitstream, agent);
 
+			// algorithm:
+			//	-> within "threshold"
+			//		-> kinematic - position
+			//			-> change in time 
+			//		-> Euler integration - velocity
+			//			-> change in time
+			//		-> lerp - ours to theirs
+			//				-> bias/param/preference
+			//  -> too "far"
+			//		-> snap - theirs
+			//			-> or lerp with higher preference for theirs
+			agent = tmp;
+			if(1)
+			{
+				// simulation 
+			}
+			
+
+			//update our state
+			agents[agent.ownerID][agent.agentID] = agent;
+			return true;
+		}
+*/
 		}
 		return false;
 	}
