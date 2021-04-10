@@ -63,20 +63,6 @@ namespace gproNet
 	};
 
 
-
-	struct sSimulationInput
-	{
-		short ownerID, agentID;
-
-		//buttons
-		//bool btnUp, btnDown, btnLeft, btnRight;								//is the button pressed?
-		//bool btnUpChange, btnDownChange, btnLeftChange, btnRightChange;		//in case button hold length matters
-		char btn[8];			//this is a lot less data than above		//all input changes in the last interval! multiple inputs!
-
-		//joystick
-		//float x, y;
-	};
-
 	// sSimulationAgent
 	// Boids agent.
 	struct sSimulationAgent
