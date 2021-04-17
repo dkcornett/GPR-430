@@ -41,6 +41,10 @@ int testPlugin()
 	{
 		printf("%d \n", foo(9000));
 
+		printf("%d \n", Startup());
+
+		printf("%d \n", Shutdown());
+
 		// done
 		//return FreeLibrary(plugin);
 		return 1;

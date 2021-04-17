@@ -30,7 +30,7 @@ namespace gproNet
 	cRakNetClient::cRakNetClient()
 	{
 		RakNet::SocketDescriptor sd;
-		char SERVER_IP[16] = "127.0.0.1";
+		char SERVER_IP[16] = "172.16.2.60";
 
 		peer->Startup(1, &sd, 1);
 		peer->SetMaximumIncomingConnections(0);
