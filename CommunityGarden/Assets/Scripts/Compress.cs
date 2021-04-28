@@ -15,4 +15,14 @@ public class Compress : MonoBehaviour
     {
         
     }
+
+    void SendCompress()
+    {
+
+        
+
+
+
+
+    }
 }

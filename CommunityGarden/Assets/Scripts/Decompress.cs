@@ -15,4 +15,10 @@ public class Decompress : MonoBehaviour
     {
         
     }
+
+    void ReceiveCompress(float x)
+    {
+
+       
+    }
 }
