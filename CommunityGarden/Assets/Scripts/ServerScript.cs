@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using System.Text;
 
 //server game object script
 // https://www.youtube.com/watch?v=qGkkaNkq8co used for reference for beginning setup
@@ -37,7 +38,7 @@ public class ServerScript : MonoBehaviour
 
         hostId = NetworkTransport.AddHost(topo, port, null);
         //make connectable throgh websocket
-        webHostId = NetworkTransport.AddHost(topo, port, null);
+        webHostId = NetworkTransport.AddWebsocketHost(topo, port, null);
 
         isStarted = true;
 
@@ -63,10 +64,23 @@ public class ServerScript : MonoBehaviour
         switch (recData)
         {
             case NetworkEventType.Nothing: break;
-            case NetworkEventType.ConnectEvent: break;
-            case NetworkEventType.DataEvent: break;
-            case NetworkEventType.DisconnectEvent: break;
-
+            case NetworkEventType.ConnectEvent:
+                {
+                    Debug.Log("Player " + connectionId + " has connected. ");
+                    break;
+                }
+            case NetworkEventType.DataEvent:
+                {
+                    string msg = Encoding.Unicode.GetString(recBuffer, 0, dataSize);
+                    Debug.Log(" Player " + connectionId + " has sent: " + msg);
+                    break;
+                }
+            case NetworkEventType.DisconnectEvent:
+                {
+                    NetworkTransport.Disconnect(hostId, connectionId, out error);
+                    Debug.Log("Player " + connectionId + " has disconnected. ");
+                    break;
+                }
             case NetworkEventType.BroadcastEvent:
 
                 break;

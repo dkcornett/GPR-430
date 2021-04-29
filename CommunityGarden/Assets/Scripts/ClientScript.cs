@@ -25,7 +25,7 @@ public class ClientScript : MonoBehaviour
 
     private float connectionTime;
     private bool isConnected = false;
-    private bool isStarted = false;
+   // private bool isStarted = false;
     private byte error;
 
     private string playerName;
@@ -55,7 +55,7 @@ public class ClientScript : MonoBehaviour
 
         HostTopology topo = new HostTopology(cc, MAX_CONNECTION);
 
-        hostId = NetworkTransport.AddHost(topo, 0);
+        hostId = NetworkTransport.AddHost(topo, port, null);
         connectionId = NetworkTransport.Connect(hostId, "LOCALHOST", port, 0, out error);
 
         connectionTime = Time.time;
@@ -86,10 +86,20 @@ public class ClientScript : MonoBehaviour
             case NetworkEventType.ConnectEvent: break;
             case NetworkEventType.DataEvent: break;
             case NetworkEventType.DisconnectEvent: break;
-
+                NetworkTransport.Disconnect(hostId, connectionId, out error);
             case NetworkEventType.BroadcastEvent:
 
                 break;
         }
+    }
+
+    private void OnApplicationQuit()
+    {
+        //  NetworkTransport.Disconnect(hostId, out connectionId, out reliableChannel, out recBuffer, out bufferSize, out error);
+        //  Debug.Log("closing clientside application.");
+        byte error;
+
+        NetworkTransport.Disconnect(hostId, connectionId, out error);
+
     }
 }
