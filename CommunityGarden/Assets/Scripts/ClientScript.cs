@@ -70,8 +70,8 @@ public class ClientScript : MonoBehaviour
 
         HostTopology topo = new HostTopology(cc, MAX_CONNECTION);
 
-        hostId = NetworkTransport.AddHost(topo, port, null);
-        connectionId = NetworkTransport.Connect(hostId, "LOCALHOST", port, 0, out error);
+        hostId = NetworkTransport.AddHost(topo, 0);
+        connectionId = NetworkTransport.Connect(hostId, "127.0.0.1", port, 0, out error);
 
         connectionTime = Time.time;
         isConnected = true;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEditor;
 
 
 public class ServerClient
@@ -16,8 +17,9 @@ public class ServerClient
 
 public class ServerScript : MonoBehaviour
 {
+
     //how many people can connect? 10 is probably already too many for this type of game
-    private int MAX_CONNECTION = 10;
+    private const int MAX_CONNECTION = 10;
 
     //pick port
     private int port = 8888;
@@ -35,6 +37,7 @@ public class ServerScript : MonoBehaviour
 
     private void Start()
     {
+
         NetworkTransport.Init();
         ConnectionConfig cc = new ConnectionConfig();
 
@@ -44,6 +47,7 @@ public class ServerScript : MonoBehaviour
         unreliableChannel = cc.AddChannel(QosType.Unreliable);
 
         HostTopology topo = new HostTopology(cc, MAX_CONNECTION);
+
 
         hostId = NetworkTransport.AddHost(topo, port, null);
         //make connectable throgh websocket
