@@ -62,7 +62,7 @@ public class ServerScript : MonoBehaviour
     private void Update()
     {
         if (!isStarted)
-        { 
+        {
             return;
         }
 
@@ -80,8 +80,8 @@ public class ServerScript : MonoBehaviour
                 {
                     Debug.Log("Player " + connectionId + " has connected. ");
                     OnConnection(connectionId);
-                    break;
                 }
+                break;
             case NetworkEventType.DataEvent:
                 {
                     string msg = Encoding.Unicode.GetString(recBuffer, 0, dataSize);
@@ -110,8 +110,9 @@ public class ServerScript : MonoBehaviour
                 {
                     NetworkTransport.Disconnect(hostId, connectionId, out error);
                     Debug.Log("Player " + connectionId + " has disconnected. ");
-                    break;
+                    OnDisconnection(connectionId);
                 }
+                break;
             case NetworkEventType.BroadcastEvent:
 
                 break;
@@ -137,10 +138,15 @@ public class ServerScript : MonoBehaviour
         msg = msg.Trim('|');
 
         Send(msg, reliableChannel, cnnId);
-     
-
-
     }
+    private void OnDisconnection(int cnnId)
+    {
+        //remove player form client list
+        clients.Remove(clients.Find(x => x.connectionId == cnnId));
+        //tell everybody about it
+        Send("DC|" + cnnId, reliableChannel, clients);
+    }
+
 
     private void Send(string message, int channelId, int cnnId)
     {
@@ -164,7 +170,7 @@ public class ServerScript : MonoBehaviour
         // Link the name to the connectionId
         clients.Find(x => x.connectionId == cnnId).playerName = playerName;
         // Tell everybody that a new player has connected
-        Send("CNN+" + playerName + '|' + cnnId, reliableChannel,clients);
+        Send("CNN|" + playerName + '|' + cnnId, reliableChannel, clients);
     }
 
 }

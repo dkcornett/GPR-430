@@ -43,7 +43,7 @@ public class ClientScript : MonoBehaviour
     private string playerName;
 
     public GameObject playerPrefab;
-    public List<Player> players = new List<Player>();
+    public Dictionary<int, Player> players = new Dictionary<int, Player>();
 
     public void Connect()
     {
@@ -113,6 +113,7 @@ public class ClientScript : MonoBehaviour
                             break;
 
                         case "DC":
+                            PlayerDisconnected(int.Parse(splitData[1]));
                             break;
 
                         default:
@@ -150,6 +151,7 @@ public class ClientScript : MonoBehaviour
         // is this ours?
         if (cnnId == ourClientId)
         {
+          //  go.AddComponent<PlayerMotor>();
             GameObject.Find("Canvas").SetActive(false);
             isStarted = true;
         }
@@ -159,7 +161,13 @@ public class ClientScript : MonoBehaviour
         p.playerName = playerName;
         p.connectionId = cnnId;
         p.avatar.GetComponentInChildren<TextMesh>().text = playerName;
-        players.Add(p);
+        players.Add(cnnId, p);
+    }
+
+    private void PlayerDisconnected(int cnnId)
+    {
+        Destroy(players[cnnId].avatar);
+        players.Remove(cnnId);
     }
 
     private void Send(string message, int channelId)
@@ -169,14 +177,6 @@ public class ClientScript : MonoBehaviour
         NetworkTransport.Send(hostId, connectionId, channelId, msg, message.Length * sizeof(char), out error);
         
     }
-    /*
-    private void OnApplicationQuit()
-    {
-        //  NetworkTransport.Disconnect(hostId, out connectionId, out reliableChannel, out recBuffer, out bufferSize, out error);
-        //  Debug.Log("closing clientside application.");
-        byte error;
+  
 
-        NetworkTransport.Disconnect(hostId, connectionId, out error);
-
-    }*/
 }
