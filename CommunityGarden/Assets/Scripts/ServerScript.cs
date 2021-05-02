@@ -1,15 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEditor;
+
 
 
 public class ServerClient
 {
     public int connectionId;
     public string playerName;
+    public Vector2 playerPos;
 }
 
 //server game object script
@@ -34,6 +37,9 @@ public class ServerScript : MonoBehaviour
     private byte error;
 
     private List<ServerClient> clients = new List<ServerClient>();
+
+    private float lastMovementUpdate;
+    private float movementUpdateRate = 0.05f;
 
     private void Start()
     {
@@ -92,11 +98,8 @@ public class ServerScript : MonoBehaviour
                         case "NAMEIS":
                             OnNameIs(connectionId, splitData[1]);
                             break;
-
-                        case "CNN":
-                            break;
-
-                        case "DC":
+                        case "MYPOSITION":
+                            OnMyPosition(connectionId, float.Parse(splitData[1]), float.Parse(splitData[2]));
                             break;
 
                         default:
@@ -116,6 +119,22 @@ public class ServerScript : MonoBehaviour
             case NetworkEventType.BroadcastEvent:
 
                 break;
+        }
+
+
+        //ask players for positions
+        if (Time.time - lastMovementUpdate >= movementUpdateRate)
+        {
+            lastMovementUpdate = Time.time;
+            string m = "ASKPOSITION|";
+            foreach (ServerClient sc in clients)
+            {
+                m += sc.connectionId + '%' + sc.playerPos.x.ToString() + '%'
+                                                    + sc.playerPos.y.ToString() + '|';
+            }
+            m = m.Trim('|');
+
+            Send(m,unreliableChannel,clients);
         }
     }
 
@@ -172,5 +191,17 @@ public class ServerScript : MonoBehaviour
         // Tell everybody that a new player has connected
         Send("CNN|" + playerName + '|' + cnnId, reliableChannel, clients);
     }
+    private void OnMyPosition(int cnnId, float x, float y)
+    {
+        bool hasClients = clients.Any();
+        if (hasClients)
+        { 
+            clients.Find(connector => connector.connectionId == cnnId).playerPos = new Vector2(x, y);
+        }
+        
+    }
+
+   
+  
 
 }

@@ -115,6 +115,9 @@ public class ClientScript : MonoBehaviour
                         case "DC":
                             PlayerDisconnected(int.Parse(splitData[1]));
                             break;
+                        case "ASKPOSITION":
+                            OnAskPosition(splitData);
+                            break;
 
                         default:
                             Debug.Log("invalid message");
@@ -162,6 +165,31 @@ public class ClientScript : MonoBehaviour
         p.connectionId = cnnId;
         p.avatar.GetComponentInChildren<TextMesh>().text = playerName;
         players.Add(cnnId, p);
+    }
+
+    private void OnAskPosition(string[] data)
+    {
+
+        //update positions of other players
+        for (int i = 1; i < data.Length - 1; i++)
+        {
+            string[] d = data[i].Split('%');
+
+            //don't  let the server update our position, just others' positions
+            if (ourClientId != int.Parse(d[0]))
+            { 
+                Vector2 pos = Vector2.zero;
+                pos.x = float.Parse(d[1]);
+                pos.y = float.Parse(d[2]);
+                players[int.Parse(d[0])].avatar.transform.position = pos;
+            }
+
+        }
+
+        // send our own position
+        Vector2 myPos = players[ourClientId].avatar.transform.position;
+        string m = "MYPOSITION|" + myPos.x.ToString() + '%' + myPos.x.ToString();
+        Send(m, unreliableChannel);
     }
 
     private void PlayerDisconnected(int cnnId)
