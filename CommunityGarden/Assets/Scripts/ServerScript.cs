@@ -109,7 +109,7 @@ public class ServerScript : MonoBehaviour
                             OnNameIs(connectionId, splitData[1]);
                             break;
                         case "MYPOSITION":
-                            OnMyPosition(connectionId, short.Parse(splitData[1]), short.Parse(splitData[2]));
+                            OnMyPosition(connectionId, float.Parse(splitData[1]), float.Parse(splitData[2]));
                             
                             break;
 
@@ -226,7 +226,7 @@ public class ServerScript : MonoBehaviour
         // Tell everybody that a new player has connected
         Send("CNN|" + playerName + "|" + cnnId, reliableChannel, clients);
     }
-    private void OnMyPosition(int cnnId, short x, short y)
+    private void OnMyPosition(int cnnId, float x, float y)
     {
         bool hasClients = clients.Any();
         if (hasClients)
