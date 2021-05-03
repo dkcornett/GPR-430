@@ -47,6 +47,7 @@ public class ClientScript : MonoBehaviour
     private string playerName;
 
     public GameObject playerPrefab;
+    public Transform spawnPosition;
     public Dictionary<int, Player> players = new Dictionary<int, Player>();
 
     public void Connect()
@@ -76,7 +77,7 @@ public class ClientScript : MonoBehaviour
         HostTopology topo = new HostTopology(cc, MAX_CONNECTION);
 
         hostId = NetworkTransport.AddHost(topo, 0);
-        connectionId = NetworkTransport.Connect(hostId, "184.171.149.137", port, 0, out error);
+        connectionId = NetworkTransport.Connect(hostId, "172.16.6.75", port, 0, out error);
 
         connectionTime = Time.time;
         isConnected = true;
@@ -163,8 +164,8 @@ public class ClientScript : MonoBehaviour
 
     private void SpawnPlayer(string playerName, int cnnId)
     {
-        GameObject playerSpawns = Instantiate(playerPrefab) as GameObject;
-        Debug.Log("Spawning Player");
+        GameObject playerSpawns = Instantiate(playerPrefab, spawnPosition) as GameObject;
+       
         // is this ours?
         if (cnnId == ourClientId)
         {
@@ -172,7 +173,7 @@ public class ClientScript : MonoBehaviour
             playerSpawns.AddComponent<PlayerScript>();
             Debug.Log("delete canvas");
             GameObject.Find("Canvas").SetActive(false);
-            
+           
         }
 
         Player p = new Player();
@@ -180,7 +181,8 @@ public class ClientScript : MonoBehaviour
         p.playerName = playerName;
         p.connectionId = cnnId;
         p.avatar.GetComponentInChildren<TextMesh>().text = playerName;
-        players.Add(cnnId, p);
+        players.Add(cnnId, p);  
+        Debug.Log("Spawning Player at " + p.avatar.transform.position );
     }
 
     private void OnAskPosition(string[] data)
