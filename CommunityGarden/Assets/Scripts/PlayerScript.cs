@@ -18,5 +18,33 @@ public class PlayerScript : MonoBehaviour
         mousePos = Input.mousePosition;
         mousePos = Camera.main.ScreenToWorldPoint(mousePos);
         transform.position = Vector2.Lerp(transform.position, mousePos, moveSpeed);
+
+        //Vector2 movement = Vector2.zero;
+
+        //if (Input.GetKeyDown(KeyCode.RightArrow))
+        //{
+
+        //    movement.x += 1;
+        //}
+        //if (Input.GetKeyDown(KeyCode.LeftArrow))
+        //{
+
+        //    movement.x -= 1;
+        //}
+        //if (Input.GetKeyDown(KeyCode.UpArrow))
+        //{
+
+        //    movement.y += 1;
+        //}
+        //if (Input.GetKeyDown(KeyCode.RightArrow))
+        //{
+
+        //    movement.y -= 1;
+        //}
+
+
+        //controller.Move(mousePos);
     }
+
+
 }

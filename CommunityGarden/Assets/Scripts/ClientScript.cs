@@ -12,6 +12,9 @@ public class Player
     public string playerName;
     public GameObject avatar;
     public int connectionId;
+
+    public Vector2 playerVelocity;
+    public Vector2 playerAcceleration;
 }
 
 
@@ -73,7 +76,7 @@ public class ClientScript : MonoBehaviour
         HostTopology topo = new HostTopology(cc, MAX_CONNECTION);
 
         hostId = NetworkTransport.AddHost(topo, 0);
-        connectionId = NetworkTransport.Connect(hostId, "127.0.0.1", port, 0, out error);
+        connectionId = NetworkTransport.Connect(hostId, "184.171.149.137", port, 0, out error);
 
         connectionTime = Time.time;
         isConnected = true;
@@ -160,20 +163,20 @@ public class ClientScript : MonoBehaviour
 
     private void SpawnPlayer(string playerName, int cnnId)
     {
-        GameObject go = Instantiate(playerPrefab) as GameObject;
+        GameObject playerSpawns = Instantiate(playerPrefab) as GameObject;
         Debug.Log("Spawning Player");
         // is this ours?
         if (cnnId == ourClientId)
         {
             isStarted = true;
-            //  go.AddComponent<PlayerMotor>();
+            playerSpawns.AddComponent<PlayerScript>();
             Debug.Log("delete canvas");
             GameObject.Find("Canvas").SetActive(false);
             
         }
 
         Player p = new Player();
-        p.avatar = go;
+        p.avatar = playerSpawns;
         p.playerName = playerName;
         p.connectionId = cnnId;
         p.avatar.GetComponentInChildren<TextMesh>().text = playerName;
@@ -187,6 +190,7 @@ public class ClientScript : MonoBehaviour
         for (int i = 1; i < data.Length - 1; i++)
         {
             string[] d = data[i].Split('%');
+            Debug.Log("D= " + d);
 
             //don't  let the server update our position, just others' positions
             if (ourClientId != int.Parse(d[0]))
@@ -201,7 +205,8 @@ public class ClientScript : MonoBehaviour
 
         // send our own position
         Vector3 myPos = players[ourClientId].avatar.transform.position;
-        string m = "MYPOSITION|" + myPos.x.ToString() + '|' + myPos.y.ToString();
+        string m = "MYPOSITION|" + Compress(myPos.x).ToString() + '|' + Compress(myPos.y).ToString();
+        Debug.Log(m);
         Send(m, unreliableChannel);
     }
 
@@ -217,6 +222,12 @@ public class ClientScript : MonoBehaviour
         byte[] msg = Encoding.Unicode.GetBytes(message);
         NetworkTransport.Send(hostId, connectionId, channelId, msg, message.Length * sizeof(char), out error);
         
+    }
+
+    private short Compress(float pos)
+    {
+
+        return (short)(pos * 10);
     }
   
 

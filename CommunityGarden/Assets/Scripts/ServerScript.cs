@@ -13,6 +13,11 @@ public class ServerClient
     public int connectionId;
     public string playerName;
     public Vector2 playerPos;
+
+    public Vector2 playerPosOld;
+    public Vector2 playerVelocity;
+    public Vector2 playerVelocityOld;
+    public Vector2 playerAcceleration;
 }
 
 //server game object script
@@ -40,6 +45,7 @@ public class ServerScript : MonoBehaviour
 
     private float lastMovementUpdate;
     private float movementUpdateRate = 0.05f;
+    private float blendU = .5f;
 
     private void Start()
     {
@@ -91,7 +97,7 @@ public class ServerScript : MonoBehaviour
             case NetworkEventType.DataEvent:
                 {
                     string msg = Encoding.Unicode.GetString(recBuffer, 0, dataSize);
-                    Debug.Log(" Receiving from " + connectionId + " : " + msg);
+                    Debug.Log("Server Receiving from " + connectionId + " : " + msg);
                     string[] splitData = msg.Split('|');
                     switch (splitData[0])
                     {
@@ -99,7 +105,7 @@ public class ServerScript : MonoBehaviour
                             OnNameIs(connectionId, splitData[1]);
                             break;
                         case "MYPOSITION":
-                            OnMyPosition(connectionId, float.Parse(splitData[1]), float.Parse(splitData[2]));
+                            OnMyPosition(connectionId, short.Parse(splitData[1]), short.Parse(splitData[2]));
                             
                             break;
 
@@ -131,11 +137,19 @@ public class ServerScript : MonoBehaviour
             {
                 lastMovementUpdate = Time.time;
                 string m = "ASKPOSITION|";
-                foreach (ServerClient sc in clients)
+                //foreach (ServerClient sc in clients)
+                //{
+                //    m += sc.connectionId + "%" + sc.playerPos.x.ToString() + "%"
+                //                                        + sc.playerPos.y.ToString() + '|';
+                //    Debug.Log("Connection Id is: " + sc.connectionId);
+                //}
+                for(int i = 0; i < clients.Count; i++)
                 {
-                    m += sc.connectionId + '%' + sc.playerPos.x.ToString() + '%'
-                                                        + sc.playerPos.y.ToString() + '|';
+
+                    m += clients[i].connectionId + "%" + clients[i].playerPos.x.ToString() + "%"
+                                                        + clients[i].playerPos.y.ToString() + '|';
                 }
+
                 m = m.Trim('|');
 
                 Send(m, unreliableChannel, clients);
@@ -154,9 +168,15 @@ public class ServerScript : MonoBehaviour
         // When player joins server print ID
         //Request player name and send the name of all the other players
         string msg = "ASKNAME|" + cnnId + "|";
-        foreach (ServerClient sc in clients)
+        //foreach (ServerClient sc in clients)
+        //{
+        //    msg += sc.playerName + '%' + sc.connectionId + '|';
+        //}
+
+        for(int i = 0; i < clients.Count; i++)
         {
-            msg += sc.playerName + '%' + sc.connectionId + '|';
+
+            msg += clients[i].playerName + '%' + clients[i].connectionId + 'l';
         }
 
         msg = msg.Trim('|');
@@ -181,11 +201,17 @@ public class ServerScript : MonoBehaviour
     //overload
     private void Send(string message, int channelId, List<ServerClient> c)
     {
-        Debug.Log("Sending : " + message);
+        Debug.Log("Server Sending : " + message);
         byte[] msg = Encoding.Unicode.GetBytes(message);
-        foreach(ServerClient sc in c)
+        //foreach(ServerClient sc in c)
+        //{
+        //    NetworkTransport.Send(hostId, sc.connectionId, channelId, msg, message.Length * sizeof(char), out error);
+        //}
+
+        for(int i = 0; i < c.Count; i++)
         {
-            NetworkTransport.Send(hostId, sc.connectionId, channelId, msg, message.Length * sizeof(char), out error);
+
+            NetworkTransport.Send(hostId, c[i].connectionId, channelId, msg, message.Length * sizeof(char), out error);
         }
     }
 
@@ -196,17 +222,39 @@ public class ServerScript : MonoBehaviour
         // Tell everybody that a new player has connected
         Send("CNN|" + playerName + "|" + cnnId, reliableChannel, clients);
     }
-    private void OnMyPosition(int cnnId, float x, float y)
+    private void OnMyPosition(int cnnId, short x, short y)
     {
         bool hasClients = clients.Any();
         if (hasClients)
         { 
-            clients.Find(connector => connector.connectionId == cnnId).playerPos = new Vector2(x, y);
+            clients.Find(connector => connector.connectionId == cnnId).playerPos = new Vector2(Decompress(x), Decompress(y));
         }
         
     }
+    
+    private float Decompress(short x)
+    {
 
-   
+        return x / 10;
+    }
+
+    private void DeadReck(List<ServerClient> serverClients)
+    {
+
+        Vector2 velocityB = new Vector2(0, 0);
+        Vector2 posB = new Vector2(0, 0);
+
+        for(int i = 0; i < serverClients.Count; i++)
+        {
+
+            velocityB = serverClients[i].playerVelocity + (serverClients[i].playerVelocityOld - serverClients[i].playerVelocity) * blendU;
+            posB = serverClients[i].playerPos + velocityB * blendU + .5f * serverClients[i].playerAcceleration * blendU * blendU;
+            serverClients[i].playerPosOld += serverClients[i].playerVelocityOld * blendU + .5f * serverClients[i].playerAcceleration * blendU * blendU;
+            serverClients[i].playerPos = posB + (serverClients[i].playerPosOld - posB) * blendU;
+            serverClients[i].playerVelocityOld = serverClients[i].playerVelocity;
+            serverClients[i].playerPosOld = serverClients[i].playerPos;
+        }
+    }
   
 
 }
