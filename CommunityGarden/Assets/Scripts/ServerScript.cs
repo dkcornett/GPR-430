@@ -122,19 +122,23 @@ public class ServerScript : MonoBehaviour
         }
 
 
-        //ask players for positions
-        if (Time.time - lastMovementUpdate >= movementUpdateRate)
+        if (clients.Count > 0)
         {
-            lastMovementUpdate = Time.time;
-            string m = "ASKPOSITION|";
-            foreach (ServerClient sc in clients)
-            {
-                m += sc.connectionId + '%' + sc.playerPos.x.ToString() + '%'
-                                                    + sc.playerPos.y.ToString() + '|';
-            }
-            m = m.Trim('|');
 
-            Send(m,unreliableChannel,clients);
+            //ask players for positions
+            if (Time.time - lastMovementUpdate >= movementUpdateRate)
+            {
+                lastMovementUpdate = Time.time;
+                string m = "ASKPOSITION|";
+                foreach (ServerClient sc in clients)
+                {
+                    m += sc.connectionId + '%' + sc.playerPos.x.ToString() + '%'
+                                                        + sc.playerPos.y.ToString() + '|';
+                }
+                m = m.Trim('|');
+
+                Send(m, unreliableChannel, clients);
+            }
         }
     }
 

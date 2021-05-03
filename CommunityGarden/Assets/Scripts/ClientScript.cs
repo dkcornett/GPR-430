@@ -148,7 +148,7 @@ public class ClientScript : MonoBehaviour
         ourClientId = int.Parse(data[1]);
 
         //send our name to the server
-        Send("NAME IS|" + playerName, reliableChannel);
+        Send("NAMEIS|" + playerName, reliableChannel);
 
         //create all the other players
         for (int i = 2; i < data.Length - 1; i++)
