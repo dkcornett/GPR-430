@@ -38,6 +38,7 @@ public class ClientScript : MonoBehaviour
     private float connectionTime;
     private bool isConnected = false;
     private bool isStarted = false;
+    private bool hasName = false;
     private byte error;
 
     private string playerName;
@@ -57,6 +58,7 @@ public class ClientScript : MonoBehaviour
         else
         {
             playerName = playerNameInput;
+            hasName = true;
         }
 
 
@@ -76,6 +78,11 @@ public class ClientScript : MonoBehaviour
         connectionTime = Time.time;
         isConnected = true;
 
+    }
+
+    private void Start()
+    {
+        GameObject.Find("Canvas").SetActive(true);
     }
 
     //update function base pulled right from API
@@ -116,7 +123,11 @@ public class ClientScript : MonoBehaviour
                             PlayerDisconnected(int.Parse(splitData[1]));
                             break;
                         case "ASKPOSITION":
-                            OnAskPosition(splitData);
+                            if(hasName)
+                            {  
+                                OnAskPosition(splitData);
+                            }
+                           
                             break;
 
                         default:
@@ -150,13 +161,15 @@ public class ClientScript : MonoBehaviour
     private void SpawnPlayer(string playerName, int cnnId)
     {
         GameObject go = Instantiate(playerPrefab) as GameObject;
-
+        Debug.Log("Spawning Player");
         // is this ours?
         if (cnnId == ourClientId)
         {
-          //  go.AddComponent<PlayerMotor>();
-            GameObject.Find("Canvas").SetActive(false);
             isStarted = true;
+            //  go.AddComponent<PlayerMotor>();
+            Debug.Log("delete canvas");
+            GameObject.Find("Canvas").SetActive(false);
+            
         }
 
         Player p = new Player();
@@ -178,7 +191,7 @@ public class ClientScript : MonoBehaviour
             //don't  let the server update our position, just others' positions
             if (ourClientId != int.Parse(d[0]))
             { 
-                Vector2 pos = Vector2.zero;
+                Vector3 pos = Vector3.zero;
                 pos.x = float.Parse(d[1]);
                 pos.y = float.Parse(d[2]);
                 players[int.Parse(d[0])].avatar.transform.position = pos;
@@ -187,8 +200,8 @@ public class ClientScript : MonoBehaviour
         }
 
         // send our own position
-        Vector2 myPos = players[ourClientId].avatar.transform.position;
-        string m = "MYPOSITION|" + myPos.x.ToString() + '%' + myPos.x.ToString();
+        Vector3 myPos = players[ourClientId].avatar.transform.position;
+        string m = "MYPOSITION|" + myPos.x.ToString() + '%' + myPos.y.ToString();
         Send(m, unreliableChannel);
     }
 

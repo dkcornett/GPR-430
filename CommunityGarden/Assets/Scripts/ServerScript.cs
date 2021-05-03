@@ -189,7 +189,7 @@ public class ServerScript : MonoBehaviour
         // Link the name to the connectionId
         clients.Find(x => x.connectionId == cnnId).playerName = playerName;
         // Tell everybody that a new player has connected
-        Send("CNN|" + playerName + '|' + cnnId, reliableChannel, clients);
+        Send("CNN|" + playerName + "|" + cnnId, reliableChannel, clients);
     }
     private void OnMyPosition(int cnnId, float x, float y)
     {
