@@ -221,8 +221,12 @@ public class ClientScript : MonoBehaviour
 
         // send our own position
         Vector3 myPos = players[ourClientId].avatar.transform.position;
+        Vector3 myVel = players[ourClientId].playerVelocity;
+        Vector3 myAcc = players[ourClientId].playerAcceleration;
         //string m = "MYPOSITION|" + Compress(myPos.x).ToString() + '|' + Compress(myPos.y).ToString();
         string m = "MYPOSITION|" + myPos.x.ToString() + '|' + myPos.y.ToString();
+        //string m = "MYPOSITION|" + myPos.x.ToString() + '|' + myPos.y.ToString() + '|' + myVel.x.ToString() + '|' + myVel.y.ToString()
+        //    + '|' + myAcc.x.ToString() + '|' + myAcc.x.ToString();
         Debug.Log(m);
         Send(m, unreliableChannel);
     }

@@ -116,6 +116,8 @@ public class ServerScript : MonoBehaviour
                             break;
                         case "MYPOSITION":
                             OnMyPosition(connectionId, float.Parse(splitData[1]), float.Parse(splitData[2]));
+                            //OnMyPosition(connectionId, float.Parse(splitData[1]), float.Parse(splitData[2]), float.Parse(splitData[3]), float.Parse(splitData[4]),
+                            //    float.Parse(splitData[5]), float.Parse(splitData[6]));
                             
                             break;
 
@@ -153,6 +155,9 @@ public class ServerScript : MonoBehaviour
                 //                                        + sc.playerPos.y.ToString() + '|';
                 //    Debug.Log("Connection Id is: " + sc.connectionId);
                 //}
+                
+                //DeadReck(clients);
+
                 for(int i = 0; i < clients.Count; i++)
                 {
 
@@ -252,6 +257,21 @@ public class ServerScript : MonoBehaviour
             clients.Find(connector => connector.connectionId == cnnId).playerPos = new Vector2(x, y);
         }
         
+    }
+
+    private void OnMyPosition(int cnnId, float x, float y, float vX, float vY, float aX, float aY)
+    {
+        bool hasClients = clients.Any();
+        if (hasClients)
+        {
+            //clients.Find(connector => connector.connectionId == cnnId).playerPos = new Vector2(Decompress(x), Decompress(y));
+            //clients.Find(connector => connector.connectionId == cnnId).playerVelocity = new Vector2(Decompress(vX), Decompress(vY));
+            //clients.Find(connector => connector.connectionId == cnnId).playerAcceleration = new Vector2(Decompress(aX), Decompress(aY));
+            clients.Find(connector => connector.connectionId == cnnId).playerPos = new Vector2(x, y);
+            clients.Find(connector => connector.connectionId == cnnId).playerVelocity = new Vector2(vX, vY);
+            clients.Find(connector => connector.connectionId == cnnId).playerAcceleration = new Vector2(aX, aY);
+        }
+
     }
 
     //compress data
