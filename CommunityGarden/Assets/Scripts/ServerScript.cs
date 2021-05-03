@@ -180,7 +180,7 @@ public class ServerScript : MonoBehaviour
         for(int i = 0; i < clients.Count; i++)
         {
 
-            msg += clients[i].playerName + '%' + clients[i].connectionId + 'l';
+            msg += clients[i].playerName + '%' + clients[i].connectionId + '|';
         }
 
         msg = msg.Trim('|');
