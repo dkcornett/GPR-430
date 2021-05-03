@@ -205,7 +205,8 @@ public class ClientScript : MonoBehaviour
 
         // send our own position
         Vector3 myPos = players[ourClientId].avatar.transform.position;
-        string m = "MYPOSITION|" + Compress(myPos.x).ToString() + '|' + Compress(myPos.y).ToString();
+        //string m = "MYPOSITION|" + Compress(myPos.x).ToString() + '|' + Compress(myPos.y).ToString();
+        string m = "MYPOSITION|" + myPos.x.ToString() + '|' + myPos.y.ToString();
         Debug.Log(m);
         Send(m, unreliableChannel);
     }
@@ -229,6 +230,10 @@ public class ClientScript : MonoBehaviour
 
         return (short)(pos * 10);
     }
-  
 
+    private float Decompress(short x)
+    {
+
+        return x / 10;
+    }
 }

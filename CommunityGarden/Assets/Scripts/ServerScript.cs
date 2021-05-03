@@ -5,7 +5,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEditor;
-
+using System.IO;
 
 
 public class ServerClient
@@ -47,6 +47,9 @@ public class ServerScript : MonoBehaviour
     private float movementUpdateRate = 0.05f;
     private float blendU = .5f;
 
+    public TextAsset text;
+    public List<string> rank;
+
     private void Start()
     {
 
@@ -67,6 +70,7 @@ public class ServerScript : MonoBehaviour
 
         isStarted = true;
 
+        readTextFile();
     }
 
     //update function base pulled right from API
@@ -227,11 +231,18 @@ public class ServerScript : MonoBehaviour
         bool hasClients = clients.Any();
         if (hasClients)
         { 
-            clients.Find(connector => connector.connectionId == cnnId).playerPos = new Vector2(Decompress(x), Decompress(y));
+            //clients.Find(connector => connector.connectionId == cnnId).playerPos = new Vector2(Decompress(x), Decompress(y));
+            clients.Find(connector => connector.connectionId == cnnId).playerPos = new Vector2(x, y);
         }
         
     }
-    
+
+    private short Compress(float pos)
+    {
+
+        return (short)(pos * 10);
+    }
+
     private float Decompress(short x)
     {
 
@@ -256,5 +267,10 @@ public class ServerScript : MonoBehaviour
         }
     }
   
+    private void readTextFile()
+    {
 
+        rank = text.text.Split('\n').ToList();
+
+    }
 }
