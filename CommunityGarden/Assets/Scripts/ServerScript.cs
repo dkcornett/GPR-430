@@ -7,7 +7,7 @@ using UnityEngine.Networking;
 using UnityEditor;
 using System.IO;
 
-
+//clients information
 public class ServerClient
 {
     public int connectionId;
@@ -50,6 +50,9 @@ public class ServerScript : MonoBehaviour
     public TextAsset text;
     public List<string> rank;
 
+    public GameData gameData;
+
+    //start server
     private void Start()
     {
 
@@ -82,6 +85,7 @@ public class ServerScript : MonoBehaviour
             return;
         }
 
+        //set up messaging
         int recHostId;
         int connectionId;
         int channelId;
@@ -89,6 +93,8 @@ public class ServerScript : MonoBehaviour
         int bufferSize = 1024;
         int dataSize;
         byte error;
+
+        //messaging type
         NetworkEventType recData = NetworkTransport.Receive(out recHostId, out connectionId, out channelId, recBuffer, bufferSize, out dataSize, out error);
         switch (recData)
         {
@@ -132,7 +138,7 @@ public class ServerScript : MonoBehaviour
                 break;
         }
 
-
+        //update player and simulation position
         if (clients.Count > 0)
         {
 
@@ -157,10 +163,16 @@ public class ServerScript : MonoBehaviour
                 m = m.Trim('|');
 
                 Send(m, unreliableChannel, clients);
+
+                Vector2 temp = gameData.getPosition();
+                m = "SIM|" + temp.x.ToString() + "|" + temp.y.ToString() + '|';
+                m = m.Trim('|');
+                Send(m, unreliableChannel, clients);
             }
         }
     }
 
+    //when player connects
     private void OnConnection(int cnnId)
     {
         // Add player to list of players
@@ -187,6 +199,8 @@ public class ServerScript : MonoBehaviour
 
         Send(msg, reliableChannel, cnnId);
     }
+
+    //when player disconnects
     private void OnDisconnection(int cnnId)
     {
         //remove player form client list
@@ -195,7 +209,7 @@ public class ServerScript : MonoBehaviour
         Send("DC|" + cnnId, reliableChannel, clients);
     }
 
-
+    //set up send to clients
     private void Send(string message, int channelId, int cnnId)
     {
         List<ServerClient> c = new List<ServerClient>();
@@ -203,6 +217,7 @@ public class ServerScript : MonoBehaviour
         Send(message, channelId, c);
     }
     //overload
+    //send to clients
     private void Send(string message, int channelId, List<ServerClient> c)
     {
         Debug.Log("Server Sending : " + message);
@@ -219,6 +234,7 @@ public class ServerScript : MonoBehaviour
         }
     }
 
+    //when player asks for name
     private void OnNameIs(int cnnId, string playerName)
     {
         // Link the name to the connectionId
@@ -226,6 +242,7 @@ public class ServerScript : MonoBehaviour
         // Tell everybody that a new player has connected
         Send("CNN|" + playerName + "|" + cnnId, reliableChannel, clients);
     }
+    //when client asks for position
     private void OnMyPosition(int cnnId, float x, float y)
     {
         bool hasClients = clients.Any();
@@ -237,18 +254,20 @@ public class ServerScript : MonoBehaviour
         
     }
 
+    //compress data
     private short Compress(float pos)
     {
 
         return (short)(pos * 10);
     }
-
+    //decompress data
     private float Decompress(short x)
     {
 
         return x / 10;
     }
 
+    //deadreckoning
     private void DeadReck(List<ServerClient> serverClients)
     {
 

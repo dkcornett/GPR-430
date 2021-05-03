@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Decompress : MonoBehaviour
 {
+    //prototype of decompress
+
     // Start is called before the first frame update
     void Start()
     {

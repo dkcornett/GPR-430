@@ -46,9 +46,12 @@ public class ClientScript : MonoBehaviour
 
     private string playerName;
 
+    //player settings
     public GameObject playerPrefab;
     public Dictionary<int, Player> players = new Dictionary<int, Player>();
+    public SimulationScript simulationScript;
 
+    //connect to server
     public void Connect()
     {
         //Does player have a name?
@@ -97,6 +100,7 @@ public class ClientScript : MonoBehaviour
             return;
         }
 
+        //set up msg
         int recHostId;
         int connectionId;
         int channelId;
@@ -104,6 +108,8 @@ public class ClientScript : MonoBehaviour
         int bufferSize = 1024;
         int dataSize;
         byte error;
+
+        //networking type
         NetworkEventType recData = NetworkTransport.Receive(out recHostId, out connectionId, out channelId, recBuffer, bufferSize, out dataSize, out error);
         switch (recData)
         {
@@ -133,6 +139,11 @@ public class ClientScript : MonoBehaviour
                            
                             break;
 
+                        case "SIM":
+
+                            simulationScript.SetPosition(new Vector2(int.Parse(splitData[1]), int.Parse(splitData[2])));
+                            break;
+
                         default:
                             Debug.Log("invalid message");
                             break;
@@ -143,8 +154,11 @@ public class ClientScript : MonoBehaviour
 
                 break;
         }
+
+        
     }
 
+    //ask name of player
     private void OnAskName(string[] data)
     {
         //set this client's id
@@ -161,6 +175,7 @@ public class ClientScript : MonoBehaviour
         }
     }
 
+    //spawn new player
     private void SpawnPlayer(string playerName, int cnnId)
     {
         GameObject playerSpawns = Instantiate(playerPrefab) as GameObject;
@@ -183,6 +198,7 @@ public class ClientScript : MonoBehaviour
         players.Add(cnnId, p);
     }
 
+    //ask for player position
     private void OnAskPosition(string[] data)
     {
 
@@ -211,12 +227,14 @@ public class ClientScript : MonoBehaviour
         Send(m, unreliableChannel);
     }
 
+    //player disconnect
     private void PlayerDisconnected(int cnnId)
     {
         Destroy(players[cnnId].avatar);
         players.Remove(cnnId);
     }
 
+    //send to server
     private void Send(string message, int channelId)
     {
         Debug.Log("Sending : " + message);
@@ -225,12 +243,14 @@ public class ClientScript : MonoBehaviour
         
     }
 
+    //compress data
     private short Compress(float pos)
     {
 
         return (short)(pos * 10);
     }
 
+    //decompress data
     private float Decompress(short x)
     {
 

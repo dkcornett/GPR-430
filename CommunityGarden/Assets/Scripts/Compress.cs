@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Compress : MonoBehaviour
 {
+    //prototype of compress
+
     // Start is called before the first frame update
     void Start()
     {

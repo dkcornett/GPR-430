@@ -5,6 +5,7 @@ using UnityEngine;
 public class SimulationScript : MonoBehaviour
 {
 
+    //get simulation data
     private Vector2 startPos;
     bool direction = true;
 
@@ -21,31 +22,32 @@ public class SimulationScript : MonoBehaviour
 
         //this.transform.position = new Vector2(startPos.x * Mathf.Sin(Time.deltaTime), startPos.y * Mathf.Cos(Time.deltaTime));
 
-        if(this.transform.position.x > 5)
-        {
+        //if(this.transform.position.x > 5)
+        //{
 
-            direction = false;
-        }
+        //    direction = false;
+        //}
 
-        if(this.transform.position.x < -5)
-        {
+        //if(this.transform.position.x < -5)
+        //{
 
-            direction = true;
-        }
+        //    direction = true;
+        //}
 
-        if (direction)
-        {
+        //if (direction)
+        //{
 
-            this.transform.position= new Vector2(this.transform.position.x + .1f, this.transform.position.y);
-        }
+        //    this.transform.position= new Vector2(this.transform.position.x + .1f, this.transform.position.y);
+        //}
 
-        else
-        {
+        //else
+        //{
 
-            this.transform.position = new Vector2(this.transform.position.x - .1f, this.transform.position.y);
-        }
+        //    this.transform.position = new Vector2(this.transform.position.x - .1f, this.transform.position.y);
+        //}
     }
 
+    //set position of game data
     public void SetPosition(Vector2 pos)
     {
 

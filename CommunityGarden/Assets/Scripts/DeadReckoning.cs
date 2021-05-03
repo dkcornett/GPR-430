@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//prototype of deadreckoning
+
 public class DeadReckoning : MonoBehaviour
 {
     // Start is called before the first frame update

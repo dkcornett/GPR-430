@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerScript : MonoBehaviour
 {
+    //player movement
+
     private CharacterController controller;
     private float verticalVelocity;
     private float horizontalVelocity;
