@@ -1,2 +1,6 @@
-# animal3D-SDK-202101SP
-animal3D SDK and related course frameworks for spring 2021.
+#GPR-430
+Final Project
+Create build of client scene
+Start server scene in unity build
+Run as many builds of client scene
+Play Game

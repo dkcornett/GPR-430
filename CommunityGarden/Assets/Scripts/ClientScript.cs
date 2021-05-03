@@ -201,7 +201,7 @@ public class ClientScript : MonoBehaviour
 
         // send our own position
         Vector3 myPos = players[ourClientId].avatar.transform.position;
-        string m = "MYPOSITION|" + myPos.x.ToString() + '%' + myPos.y.ToString();
+        string m = "MYPOSITION|" + myPos.x.ToString() + '|' + myPos.y.ToString();
         Send(m, unreliableChannel);
     }
 

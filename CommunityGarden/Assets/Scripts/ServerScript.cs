@@ -100,6 +100,7 @@ public class ServerScript : MonoBehaviour
                             break;
                         case "MYPOSITION":
                             OnMyPosition(connectionId, float.Parse(splitData[1]), float.Parse(splitData[2]));
+                            
                             break;
 
                         default:
